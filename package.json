@@ -7,9 +7,11 @@
   "files": [
     "lib",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "src"
   ],
   "scripts": {
+    "prepare": "npm run build",
     "build": "rm -rf ./lib && webpack && tsc --declaration --emitDeclarationOnly",
     "eslint": "eslint -c .eslintrc ./src/**"
   },
