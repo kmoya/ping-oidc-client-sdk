@@ -360,24 +360,29 @@ export class OidcClient {
   }
 
   /**
-   * End the users session using the end_session_endpoint from the issuer, the id token will be automatically appended
-   * to the url via the id_token_hint url parameter if it is available. This call will redirect the browser tab to the signoff
-   * endpoint so it does not return anything.
+   * End the users session using the end_session_endpoint or the ping_end_session_endpoint from the issuer, the id token will be 
+   * automatically appended to the url via the id_token_hint url parameter if it is available. This call will redirect the browser 
+   * tab to the signoff endpoint so it does not return anything.
    *
    * @param postLogoutRedirectUri {string} optional url to redirect user to after their session has been ended
    */
   async endSession(postLogoutRedirectUri?: string): Promise<void> {
     this.logger.debug('OidcClient', 'endSession called');
 
-    if (!this.issuerConfiguration?.end_session_endpoint) {
+    let logoutUrl;
+    
+    if (this.issuerConfiguration?.end_session_endpoint) {
+      logoutUrl = this.issuerConfiguration.end_session_endpoint;
+    } else if (this.issuerConfiguration?.ping_end_session_endpoint) {
+      logoutUrl = this.issuerConfiguration.ping_end_session_endpoint;
+    } else {
       this.logger.error(
         'OidcClient',
-        'No end_session_endpoint has not been found, either initialize the client with OidcClient.initializeFromOpenIdConfig() using an issuer with a .well-known endpoint or ensure you have passed in a end_session_endpoint with the OpenIdConfiguration object',
+        'No end_session_endpoint or ping_end_session_endpoint was found, either initialize the client with OidcClient.initializeFromOpenIdConfig() using an issuer with a .well-known endpoint or ensure you have passed in end_session_endpoint or ping_end_session_endpoint with the OpenIdConfiguration object',
       );
       return;
     }
 
-    let logoutUrl = this.issuerConfiguration.end_session_endpoint;
     const search = new URLSearchParams();
 
     const token = await this.clientStorage.getToken();

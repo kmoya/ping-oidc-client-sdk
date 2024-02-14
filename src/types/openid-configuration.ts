@@ -5,6 +5,7 @@ export interface OpenIdConfiguration {
   userinfo_endpoint: string;
   jwks_uri: string;
   end_session_endpoint: string;
+  ping_end_session_endpoint: string;
   introspection_endpoint: string;
   revocation_endpoint: string;
   claims_parameter_supported: boolean;
